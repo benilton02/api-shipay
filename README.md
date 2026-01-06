@@ -17,7 +17,7 @@ A API conta com os seguintes endpoints:
 1. **POST /users** - Criação de usuários
    - Recebe dados do usuário (nome, email, senha, role_id)
    - Valida os dados e salva no banco de dados
-   - Retorna os dados do usuário criado
+   - Retorna mensagem do usuário criado
 
 2. **GET /users?email={email}** - Busca usuário por email
    - Recebe um email como parâmetro
