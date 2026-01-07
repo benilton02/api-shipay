@@ -15,12 +15,15 @@ from datetime import datetime
 @patch("application.use_cases.users_use_case.UsersRepository")
 async def test_create_user_successful(user_repository_patch):
     repository = user_repository_patch.return_value
-    repository.read = Mock(return_value=None)
+    repository.read = Mock(return_value=([], 0))
     repository.create = Mock(return_value=True)
 
     expected_result = {"message": "User created successful"}
     use_case = UsersUseCase()
+    use_case.users_repository = repository
+
     dto_mock = Mock()
+    dto_mock.email = "user@example.com"
 
     status_code, result = await use_case.create_user(dto_mock)
 
@@ -32,10 +35,13 @@ async def test_create_user_successful(user_repository_patch):
 @patch("application.use_cases.users_use_case.UsersRepository")
 async def test_create_user_internal_error(user_repository_patch):
     repository = user_repository_patch.return_value
-    repository.read = Mock(return_value=None)
+
+    repository.read = Mock(return_value=([], 0))
     repository.create = Mock(return_value="Database error")
 
     use_case = UsersUseCase()
+    use_case.users_repository = repository
+
     dto_mock = Mock()
     dto_mock.email = "user@example.com"
 
@@ -53,16 +59,18 @@ async def test_create_user_already_exists(user_repository_patch):
     user_mock = Mock()
     user_mock.email = "user@example.com"
 
-    repository.read = Mock(return_value=user_mock)
+    repository.read = Mock(return_value=([user_mock], 1))
 
     use_case = UsersUseCase()
+    use_case.users_repository = repository
+
     dto_mock = Mock()
     dto_mock.email = "user@example.com"
 
     status_code, result = await use_case.create_user(dto_mock)
 
     assert status_code == HTTP_400_BAD_REQUEST
-    assert result == {"message": "The user@example.com already exist"}
+    assert result == {"message": f"The {dto_mock.email} already exist"}
 
 
 @pytest.mark.asyncio

@@ -17,11 +17,13 @@ class UsersUseCase:
 
     async def create_user(self, user_dto: CreateUserDTO):
         """Criar um usuário"""
-        user = self.users_repository.read(user_dto.email)
+        items, total = self.users_repository.read(
+            page=1, per_page=10, email=user_dto.email
+        )
 
-        if user:
+        if items:
             status_code, content = HTTP_400_BAD_REQUEST, {
-                "message": f"The {user.email} already exist"
+                "message": f"The {user_dto.email} already exist"
             }
 
         else:

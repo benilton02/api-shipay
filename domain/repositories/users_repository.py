@@ -29,18 +29,11 @@ class UsersRepository:
 
     def read(self, page: int, per_page: int, email: str) -> Users | None:
         with DatabaseSession() as session:
-            base_q = session.query(Users).options(joinedload(Users.claims))
-            count_q = session.query(func.count(Users.id))
+            query = session.query(Users).options(joinedload(Users.claims))
 
             if email:
-                base_q = base_q.filter(Users.email == email)
-                count_q = count_q.filter(Users.email == email)
+                query = query.filter(Users.email == email)
 
-                user = base_q.first()
-                total = 1 if user else 0
-                return ([user] if user else []), total
-
-            total = count_q.scalar() or 0
-            items = base_q.offset((page - 1) * per_page).limit(per_page).all()
-
+            total = query.count()
+            items = query.offset((page - 1) * per_page).limit(per_page).all()
             return items, total
