@@ -19,10 +19,10 @@ A API conta com os seguintes endpoints:
    - Valida os dados e salva no banco de dados
    - Retorna mensagem do usuário criado
 
-2. **GET /users?email={email}** - Busca usuário por email
-   - Recebe um email como parâmetro
-   - Busca o usuário correspondente no banco de dados
-   - Retorna os dados do usuário encontrado
+2. **GET /users?email={email}** - Busca usuários. Suporta filtro por email e paginação.
+  - Se email for informado, a resposta conterá os usuários que correspondem ao email.
+  - Se email não for informado, a resposta retornará a lista paginada de usuários.
+  - Quando não há resultados, `users` será uma lista vazia e `total` será 0.
 
 ## Seed de Dados
 
